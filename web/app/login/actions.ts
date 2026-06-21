@@ -9,7 +9,7 @@ export interface AuthState {
 }
 
 function siteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100";
 }
 
 function credentials(formData: FormData) {

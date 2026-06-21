@@ -23,10 +23,10 @@ class Settings(BaseSettings):
 
     # OpenRouter attribution headers (optional but recommended).
     app_title: str = "Personalized Mass AI Mailer"
-    app_referer: str = "http://localhost:3000"
+    app_referer: str = "http://localhost:3100"
 
     # CORS — comma-separated list of allowed web origins.
-    cors_allow_origins: str = "http://localhost:3000"
+    cors_allow_origins: str = "http://localhost:3100"
 
     @property
     def cors_origins(self) -> list[str]:

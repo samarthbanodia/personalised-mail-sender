@@ -67,7 +67,7 @@ cp .env.example .env.local      # then fill in Supabase keys + AGENT_SERVICE_URL
 npm run dev
 ```
 
-Open <http://localhost:3000>.
+Open <http://localhost:3100>.
 
 ## End-to-end test
 
