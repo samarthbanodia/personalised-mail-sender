@@ -1,0 +1,46 @@
+# Render Blueprint — deploys BOTH services from this monorepo.
+# In Render: New + > Blueprint, point it at this repo. Then fill the values marked
+# `sync: false` in the dashboard (secrets + cross-service URLs known only after the
+# first deploy). The agent URL is wired into the web app automatically.
+services:
+  # --- Python agent service (FastAPI + deepagents + OpenRouter) ---
+  - type: web
+    name: mailer-agent
+    runtime: python
+    rootDir: agent
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: DEFAULT_RESUME_MODEL
+        value: openai/gpt-4o-mini
+      - key: DEFAULT_PERSONALIZATION_MODEL
+        value: anthropic/claude-3.5-sonnet
+      - key: CORS_ALLOW_ORIGINS
+        sync: false # set to the web URL, e.g. https://mailer-web.onrender.com
+
+  # --- Next.js web app ---
+  - type: web
+    name: mailer-web
+    runtime: node
+    rootDir: web
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    envVars:
+      # NEXT_PUBLIC_* are inlined at build time — they must be set before the build runs.
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false # the web URL, e.g. https://mailer-web.onrender.com
+      # Server-side, read at request time — auto-wired to the agent service host.
+      - key: AGENT_SERVICE_URL
+        fromService:
+          type: web
+          name: mailer-agent
+          property: host
